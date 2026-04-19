@@ -1,25 +1,66 @@
-# Civic Optics Protocol (COP‑1)
+# Civic Optics Protocol (COP-1)
 
-The **Civic Optics Protocol** is an open standard for assessing the quality of public‑facing civic information.  The goal is to ensure that important government‑issued materials—such as absentee voting instructions, policy guides or meeting notices—are **legible**, **understandable**, **navigable**, **current** and **actionable**.
+This project scores whether a public-facing government page is actually usable.
 
-This repository contains the core standard (`protocol.md`), a simple Python scoring script (`scorer.py`), a minimal static website (`index.html`) and a few sample audits demonstrating how COP‑1 can be applied in practice.
+The live homepage is now a **working calculator**. You do not need Python to use the main tool anymore.
 
-## Files
+## What this measures
 
-| File | Description |
+COP-1 scores a page across five categories:
+
+- **Legibility** — can a normal person read it quickly?
+- **Understandability** — does it make sense without jargon?
+- **Navigability** — can people find what matters fast?
+- **Currency** — does it look current and up to date?
+- **Actionability** — does it clearly tell people what to do next?
+
+## Fastest way to use it
+
+1. Open the live site homepage.
+2. Enter the page name and URL.
+3. Move the five sliders from 0 to 10.
+4. Read the final score out of 100.
+5. Click **Copy report** and paste the result into a doc, spreadsheet, email, or article draft.
+
+## Score interpretation
+
+- **85-100** = excellent
+- **70-84** = strong
+- **55-69** = usable but flawed
+- **Below 55** = hard for the public to use
+
+## Example
+
+If a county absentee voting page feels:
+
+- Legibility: 8
+- Understandability: 6
+- Navigability: 7
+- Currency: 5
+- Actionability: 9
+
+Then the tool calculates the weighted COP-1 score automatically.
+
+## Files in this repo
+
+| File | What it is |
 | --- | --- |
-| `protocol.md` | Detailed description of the COP‑1 criteria and scoring weights. |
-| `scorer.py` | Example script that calculates a weighted Civic Optics Index given scores for each criterion. |
-| `index.html` | Simple microsite that describes the project and links to audits. |
-| `audits/sample_audit.md` | Sample audit covering three Georgia absentee‑voting pages. |
+| `index.html` | The actual browser calculator |
+| `protocol.md` | The scoring standard |
+| `audits/sample_audit.md` | Example writeup |
+| `scorer.py` | Command-line fallback calculator |
 
-## Usage
+## Good use cases
 
-1. Read `protocol.md` to understand the scoring rubric.
-2. Use the `scorer.py` script to compute a weighted score.  You can run it with Python 3 and pass scores via command‑line arguments or modify it to suit your needs.
-3. Review the sample audit in `audits/sample_audit.md` for guidance on producing your own audits.
-4. Publish your audits publicly to encourage feedback and adoption.
+- Compare election-information pages across counties
+- Score school board notice pages
+- Audit city service or permit pages
+- Build a ranked list of which civic pages are easiest or hardest to use
+
+## Notes
+
+This is best used as a **human-scored audit tool**, not an automatic crawler. The point is to make your judgment explicit, consistent, and publishable.
 
 ## License
 
-This project is released into the public domain under the Creative Commons Zero (CC0) license.  You are free to use, adapt and redistribute it without restriction.
+CC0 / public domain.
