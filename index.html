@@ -3,192 +3,503 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>COP-1 Calculator</title>
+  <title>COP-1 Analyzer</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f6f7fb; color: #111; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
-    .card { background: #fff; border: 1px solid #dcdfe8; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.04); }
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --line: #dde2ea;
+      --text: #111827;
+      --muted: #6b7280;
+      --blue: #275df5;
+      --good: #167c42;
+      --mid: #9a6400;
+      --bad: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.03); }
     .hero { margin-bottom: 16px; }
-    .grid { display: grid; grid-template-columns: 1.2fr .85fr; gap: 16px; }
-    .row { border: 1px solid #e3e6ef; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; }
+    .subgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
     .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .pill { background: #eef2ff; color: #1d3fff; font-weight: 700; border-radius: 999px; padding: 6px 10px; min-width: 40px; text-align: center; }
-    input[type='text'], input[type='url'], textarea { width: 100%; box-sizing: border-box; border: 1px solid #dcdfe8; border-radius: 10px; padding: 10px 12px; font: inherit; }
+    .pill { background: #eef2ff; color: #1d3fff; font-weight: 700; border-radius: 999px; padding: 6px 10px; min-width: 42px; text-align: center; }
+    .small { color: var(--muted); font-size: 13px; }
+    input[type='text'], input[type='url'], textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; background: #fff;
+    }
+    textarea { min-height: 170px; resize: vertical; }
     input[type='range'] { width: 100%; }
-    textarea { min-height: 110px; resize: vertical; }
-    .small { color: #666; font-size: 13px; }
-    .score { font-size: 52px; font-weight: 800; line-height: 1; margin: 8px 0; }
+    .score { font-size: 56px; font-weight: 800; line-height: 1; margin: 8px 0; }
     .band { display: inline-block; border-radius: 999px; padding: 6px 10px; font-weight: 700; }
-    .good { background: #e8f7ee; color: #1f8f4e; }
-    .mid { background: #fff3de; color: #a86a00; }
-    .bad { background: #fdeaea; color: #c53030; }
-    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-    button, a.btn { border: 1px solid #dcdfe8; border-radius: 10px; padding: 10px 14px; background: #fff; color: #111; text-decoration: none; cursor: pointer; font: inherit; }
-    button.primary { background: #2d5bff; border-color: #2d5bff; color: #fff; }
-    .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-    .steps { margin-top: 16px; }
-    .steps div { background: #fff; border: 1px solid #dcdfe8; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-    @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } .score { font-size: 40px; } }
+    .good { background: #e8f7ee; color: var(--good); }
+    .mid { background: #fff2dc; color: var(--mid); }
+    .bad { background: #fdecec; color: var(--bad); }
+    .buttons, .links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .buttons { margin-top: 14px; }
+    button, a.btn {
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: #fff; color: var(--text); text-decoration: none; cursor: pointer; font: inherit;
+    }
+    button.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .status { margin-top: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fbfcfe; }
+    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .metric { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; }
+    .metric strong { display: block; font-size: 22px; margin-bottom: 4px; }
+    .evidence { display: grid; gap: 10px; }
+    .evidenceBlock { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #fff; }
+    ul.tight { margin: 8px 0 0 18px; padding: 0; }
+    .steps { margin-top: 16px; display: grid; gap: 10px; }
+    .steps div { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+    @media (max-width: 920px) {
+      .grid, .subgrid, .metrics { grid-template-columns: 1fr; }
+      .score { font-size: 42px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card hero">
-      <h1>COP-1 Calculator</h1>
-      <p>This page is the actual tool. Score a public information page from 0 to 10 across the five categories and it calculates the final COP-1 score automatically.</p>
-      <p class="small">0 = terrible, 10 = excellent. Weights: Legibility 20%, Understandability 30%, Navigability 20%, Currency 15%, Actionability 15%.</p>
+      <h1>COP-1 Semi-Automated Analyzer</h1>
+      <p>This version actually analyzes content. Paste a URL or paste the page text/HTML. The tool extracts evidence, suggests scores for all five categories, and lets you override them before exporting a report.</p>
+      <p class="small">Because this is a static GitHub Pages site, direct URL fetching can fail on some sites due to browser cross-origin rules. When that happens, paste the page text or HTML into the big box and the analyzer still works.</p>
       <div class="links">
         <a class="btn" href="protocol.md">Scoring standard</a>
+        <a class="btn" href="audit-template.md">Audit template</a>
         <a class="btn" href="audits/sample_audit.md">Sample audit</a>
         <a class="btn" href="README.md">README</a>
       </div>
     </div>
 
     <div class="grid">
-      <div class="card">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
-          <div>
-            <label><strong>Page name</strong></label>
-            <input id="pageName" type="text" placeholder="Example: Fulton County absentee voting page" />
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="subgrid" style="margin-bottom:12px;">
+            <div>
+              <label><strong>Page name</strong></label>
+              <input id="pageName" type="text" placeholder="Example: Fulton County absentee voting page" />
+            </div>
+            <div>
+              <label><strong>URL to analyze</strong></label>
+              <input id="pageUrl" type="url" placeholder="https://..." />
+            </div>
           </div>
-          <div>
-            <label><strong>URL</strong></label>
-            <input id="pageUrl" type="url" placeholder="https://..." />
+
+          <label><strong>Paste page text or HTML</strong></label>
+          <textarea id="sourceInput" placeholder="Paste visible page text here, or paste raw HTML. If direct URL analysis fails, use this box."></textarea>
+
+          <div class="buttons">
+            <button class="primary" id="analyzeBtn">Analyze source</button>
+            <button id="exampleBtn">Load example</button>
+            <button id="resetBtn">Reset</button>
+            <button id="copyBtn">Copy report</button>
+          </div>
+          <div class="status small" id="statusBox">Waiting. Enter a URL or paste source text, then click Analyze source.</div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <h2>Suggested scores</h2>
+          <p class="small">The analyzer sets these automatically from extracted evidence. You can adjust them manually.</p>
+
+          <div class="row">
+            <div class="head"><div><strong>Legibility</strong><div class="small">Readability, headings, lists, paragraph density</div></div><div class="pill" id="legibilityVal">5</div></div>
+            <input id="legibility" type="range" min="0" max="10" value="5" />
+          </div>
+          <div class="row">
+            <div class="head"><div><strong>Understandability</strong><div class="small">Plain language, jargon load, clarity of instructions</div></div><div class="pill" id="understandabilityVal">5</div></div>
+            <input id="understandability" type="range" min="0" max="10" value="5" />
+          </div>
+          <div class="row">
+            <div class="head"><div><strong>Navigability</strong><div class="small">Structure, links, headings, scanability</div></div><div class="pill" id="navigabilityVal">5</div></div>
+            <input id="navigability" type="range" min="0" max="10" value="5" />
+          </div>
+          <div class="row">
+            <div class="head"><div><strong>Currency</strong><div class="small">Dates, update signals, deadline freshness</div></div><div class="pill" id="currencyVal">5</div></div>
+            <input id="currency" type="range" min="0" max="10" value="5" />
+          </div>
+          <div class="row" style="margin-bottom:0;">
+            <div class="head"><div><strong>Actionability</strong><div class="small">Forms, contact info, steps, calls to action</div></div><div class="pill" id="actionabilityVal">5</div></div>
+            <input id="actionability" type="range" min="0" max="10" value="5" />
           </div>
         </div>
 
-        <div class="row">
-          <div class="head"><div><strong>Legibility</strong><div class="small">Can a normal person read it quickly?</div></div><div class="pill" id="legibilityVal">5</div></div>
-          <input id="legibility" type="range" min="0" max="10" value="5" />
+        <div class="card">
+          <label><strong>Analyst notes</strong></label>
+          <textarea id="notes" placeholder="Add your own notes here. The analyzer will also suggest recommendations after a run."></textarea>
         </div>
-
-        <div class="row">
-          <div class="head"><div><strong>Understandability</strong><div class="small">Does it make sense without jargon?</div></div><div class="pill" id="understandabilityVal">5</div></div>
-          <input id="understandability" type="range" min="0" max="10" value="5" />
-        </div>
-
-        <div class="row">
-          <div class="head"><div><strong>Navigability</strong><div class="small">Can people find what matters fast?</div></div><div class="pill" id="navigabilityVal">5</div></div>
-          <input id="navigability" type="range" min="0" max="10" value="5" />
-        </div>
-
-        <div class="row">
-          <div class="head"><div><strong>Currency</strong><div class="small">Does it look current and up to date?</div></div><div class="pill" id="currencyVal">5</div></div>
-          <input id="currency" type="range" min="0" max="10" value="5" />
-        </div>
-
-        <div class="row">
-          <div class="head"><div><strong>Actionability</strong><div class="small">Does it clearly tell people what to do next?</div></div><div class="pill" id="actionabilityVal">5</div></div>
-          <input id="actionability" type="range" min="0" max="10" value="5" />
-        </div>
-
-        <label><strong>Notes</strong></label>
-        <textarea id="notes" placeholder="Example: Deadline is buried. Strong direct link to the form. No visible update date."></textarea>
       </div>
 
-      <div class="card">
-        <h2>Result</h2>
-        <div class="score" id="score">50.0</div>
-        <div class="band mid" id="band">Needs work</div>
-        <p class="small" id="explanation">This page is usable but has clear weaknesses.</p>
-
-        <div class="row" style="margin-top:14px;">
-          <strong>Interpretation</strong>
-          <div class="small" style="margin-top:8px;">
-            85-100 = excellent<br>
-            70-84 = strong<br>
-            55-69 = usable but flawed<br>
-            below 55 = hard for the public to use
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h2>Result</h2>
+          <div class="score" id="score">50.0</div>
+          <div class="band mid" id="band">Needs work</div>
+          <p class="small" id="explanation">Analyze a source to get evidence-backed suggested scores.</p>
+          <div class="row" style="margin-top:14px; margin-bottom:0;">
+            <strong>Score interpretation</strong>
+            <div class="small" style="margin-top:8px;">
+              85-100 = excellent<br>
+              70-84 = strong<br>
+              55-69 = usable but flawed<br>
+              below 55 = hard for the public to use
+            </div>
           </div>
         </div>
 
-        <div class="buttons">
-          <button class="primary" id="copyBtn">Copy report</button>
-          <button id="exampleBtn">Load example</button>
-          <button id="resetBtn">Reset</button>
+        <div class="card" style="margin-bottom:16px;">
+          <h2>Extracted metrics</h2>
+          <div class="metrics">
+            <div class="metric"><strong id="wordCount">0</strong><span class="small">words</span></div>
+            <div class="metric"><strong id="readingEase">0</strong><span class="small">reading ease</span></div>
+            <div class="metric"><strong id="headingCount">0</strong><span class="small">headings</span></div>
+            <div class="metric"><strong id="linkCount">0</strong><span class="small">links</span></div>
+            <div class="metric"><strong id="dateCount">0</strong><span class="small">dates detected</span></div>
+            <div class="metric"><strong id="contactCount">0</strong><span class="small">contacts/forms detected</span></div>
+          </div>
         </div>
 
-        <p class="small" style="margin-top:14px;">Use Copy report after scoring a page, then paste the result into a doc, spreadsheet, email, or article draft.</p>
+        <div class="card">
+          <h2>Why the analyzer suggested those scores</h2>
+          <div class="evidence">
+            <div class="evidenceBlock"><strong>Legibility</strong><ul class="tight" id="legibilityEvidence"></ul></div>
+            <div class="evidenceBlock"><strong>Understandability</strong><ul class="tight" id="understandabilityEvidence"></ul></div>
+            <div class="evidenceBlock"><strong>Navigability</strong><ul class="tight" id="navigabilityEvidence"></ul></div>
+            <div class="evidenceBlock"><strong>Currency</strong><ul class="tight" id="currencyEvidence"></ul></div>
+            <div class="evidenceBlock"><strong>Actionability</strong><ul class="tight" id="actionabilityEvidence"></ul></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="steps">
-      <h2>How to use it</h2>
-      <div><strong>1.</strong> Open a public page you want to audit.</div>
-      <div><strong>2.</strong> Move the five sliders based on how usable the page feels.</div>
-      <div><strong>3.</strong> Read the total score and copy the generated report.</div>
+      <div><strong>1.</strong> Paste a URL and try Analyze source. If the site blocks browser fetches, paste the page text or HTML instead.</div>
+      <div><strong>2.</strong> Let the analyzer suggest scores, then adjust them if needed.</div>
+      <div><strong>3.</strong> Click Copy report and paste the result into a doc, sheet, email, or article draft.</div>
     </div>
   </div>
 
   <script>
-    const ids = ['legibility','understandability','navigability','currency','actionability'];
-    const weights = { legibility:.20, understandability:.30, navigability:.20, currency:.15, actionability:.15 };
+    const ids = ["legibility", "understandability", "navigability", "currency", "actionability"];
+    const weights = { legibility: 0.20, understandability: 0.30, navigability: 0.20, currency: 0.15, actionability: 0.15 };
+    let lastAnalysis = null;
 
-    function calc() {
+    const jargonTerms = [
+      "pursuant", "herein", "thereof", "therein", "applicant", "affidavit", "eligibility",
+      "nonpartisan", "provisional", "jurisdiction", "certify", "statutory", "compliance",
+      "submission", "documentation", "verification", "ordinance", "registrar", "clerk"
+    ];
+    const actionTerms = [
+      "apply", "submit", "register", "download", "print", "sign", "upload", "complete",
+      "check", "find", "contact", "call", "email", "visit", "bring", "mail", "fax",
+      "vote", "request", "return", "track"
+    ];
+    const deadlineTerms = ["deadline", "due", "must be received", "no later than", "before", "by", "must submit"];
+
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+    function roundScore(n) { return Math.round(clamp(n, 0, 10)); }
+    function clean(text) { return (text || "").replace(/\s+/g, " ").trim(); }
+    function setStatus(msg) { document.getElementById("statusBox").textContent = msg; }
+    function isLikelyHTML(str) { return /<\/?[a-z][\s\S]*>/i.test(str || ""); }
+
+    function countSyllables(word) {
+      word = (word || "").toLowerCase().replace(/[^a-z]/g, "");
+      if (!word) return 0;
+      if (word.length <= 3) return 1;
+      const vowels = word.match(/[aeiouy]{1,2}/g);
+      let count = vowels ? vowels.length : 1;
+      if (word.endsWith("e")) count -= 1;
+      if (word.endsWith("le") && word.length > 2) count += 1;
+      return Math.max(1, count);
+    }
+
+    function parseDates(text) {
+      const matches = [];
+      const monthRegex = /\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+\d{1,2},?\s+\d{2,4}\b/gi;
+      const numericRegex = /\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/g;
+      (text.match(monthRegex) || []).forEach(m => matches.push(m));
+      (text.match(numericRegex) || []).forEach(m => matches.push(m));
+      const parsed = matches.map(m => ({ raw: m, date: new Date(m) })).filter(x => !isNaN(x.date.getTime()));
+      return parsed;
+    }
+
+    function extractFromHTML(raw) {
+      const doc = new DOMParser().parseFromString(raw, "text/html");
+      doc.querySelectorAll("script,style,noscript,svg,canvas").forEach(el => el.remove());
+      const headings = [...doc.querySelectorAll("h1,h2,h3,h4,h5,h6")].map(el => clean(el.textContent)).filter(Boolean);
+      const links = [...doc.querySelectorAll("a[href]")].map(el => ({ text: clean(el.textContent), href: el.getAttribute("href") || "" }));
+      const buttons = [...doc.querySelectorAll("button,input[type='submit'],input[type='button']")].map(el => clean(el.textContent || el.value));
+      const listItems = [...doc.querySelectorAll("li")].map(el => clean(el.textContent)).filter(Boolean);
+      const title = clean(doc.title || headings[0] || "");
+      const text = clean(doc.body ? (doc.body.innerText || doc.body.textContent || "") : raw);
+      return { text, title, headings, links, buttons, listItems, formCount: doc.querySelectorAll("form").length };
+    }
+
+    function extractFromPlainText(raw) {
+      return { text: clean(raw), title: "", headings: [], links: [], buttons: [], listItems: [], formCount: 0 };
+    }
+
+    function scoreSource(extracted, url) {
+      const text = extracted.text;
+      const words = (text.match(/\b[\w'’-]+\b/g) || []);
+      const wordCount = words.length;
+      const sentenceCount = Math.max(1, (text.match(/[.!?]+/g) || []).length);
+      const avgWordsPerSentence = wordCount / sentenceCount;
+      let syllables = 0;
+      words.slice(0, 4000).forEach(w => syllables += countSyllables(w));
+      const syllablesPerWord = wordCount ? syllables / Math.min(wordCount, 4000) : 0;
+      const readingEase = wordCount ? (206.835 - (1.015 * avgWordsPerSentence) - (84.6 * syllablesPerWord)) : 0;
+      const paragraphs = text.split(/\n\s*\n/).map(clean).filter(Boolean);
+      const longParagraphs = paragraphs.filter(p => (p.match(/\b[\w'’-]+\b/g) || []).length > 120).length;
+      const headingCount = extracted.headings.length;
+      const linkCount = extracted.links.length;
+      const listCount = extracted.listItems.length;
+      const buttonCount = extracted.buttons.filter(Boolean).length;
+      const emailCount = (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig) || []).length;
+      const phoneCount = (text.match(/(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g) || []).length;
+      const hasAddressish = /\b\d+\s+[A-Za-z0-9.\- ]+\b(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Drive|Dr\.?|Boulevard|Blvd\.?|Lane|Ln\.?|Way|Court|Ct\.?)\b/i.test(text);
+      const jargonCount = jargonTerms.reduce((sum, term) => sum + ((text.match(new RegExp("\\b" + term + "\\b", "gi")) || []).length), 0);
+      const actionCount = actionTerms.reduce((sum, term) => sum + ((text.match(new RegExp("\\b" + term + "\\b", "gi")) || []).length), 0);
+      const deadlineCount = deadlineTerms.reduce((sum, term) => sum + ((text.match(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi")) || []).length), 0);
+      const parsedDates = parseDates(text);
+      const now = new Date();
+      const recentDates = parsedDates.filter(d => Math.abs(now - d.date) / (1000 * 60 * 60 * 24) <= 540).length;
+      const updateWords = /(last updated|updated|revised|posted|effective|as of)/i.test(text);
+      const stepMarkers = /(step\s+1|1\.|first\b|how to\b|follow these steps|instructions)/i.test(text);
+
+      let legibility = 5;
+      if (readingEase >= 60) legibility += 2; else if (readingEase >= 45) legibility += 1; else if (readingEase < 25) legibility -= 2; else if (readingEase < 35) legibility -= 1;
+      if (headingCount >= 3) legibility += 1;
+      if (listCount >= 4) legibility += 1;
+      if (avgWordsPerSentence > 24) legibility -= 1;
+      if (longParagraphs >= 3) legibility -= 1;
+      legibility = roundScore(legibility);
+
+      let understandability = 5;
+      if (readingEase >= 55) understandability += 2; else if (readingEase >= 40) understandability += 1; else if (readingEase < 20) understandability -= 2; else if (readingEase < 30) understandability -= 1;
+      if (jargonCount >= 10) understandability -= 2; else if (jargonCount >= 4) understandability -= 1;
+      if (stepMarkers) understandability += 1;
+      if (actionCount >= 6) understandability += 1;
+      if (wordCount > 1600 && headingCount < 3) understandability -= 1;
+      understandability = roundScore(understandability);
+
+      let navigability = 4;
+      if (headingCount >= 4) navigability += 2; else if (headingCount >= 2) navigability += 1;
+      if (linkCount >= 3) navigability += 1;
+      if (listCount >= 5) navigability += 1;
+      if (buttonCount + extracted.formCount > 0) navigability += 1;
+      if (wordCount > 1400 && headingCount < 3) navigability -= 1;
+      navigability = roundScore(navigability);
+
+      let currency = 4;
+      if (recentDates > 0) currency += 4; else if (parsedDates.length > 0) currency += 2; else currency -= 1;
+      if (updateWords) currency += 1;
+      if (deadlineCount > 0) currency += 1;
+      currency = roundScore(currency);
+
+      let actionability = 4;
+      if (actionCount >= 6) actionability += 2; else if (actionCount >= 3) actionability += 1;
+      if (emailCount + phoneCount + (hasAddressish ? 1 : 0) > 0) actionability += 1;
+      if (buttonCount + extracted.formCount > 0) actionability += 1;
+      if (deadlineCount > 0) actionability += 1;
+      if (stepMarkers || listCount >= 5) actionability += 1;
+      actionability = roundScore(actionability);
+
+      const notes = [];
+      if (currency <= 5) notes.push("Add a visible last-updated date near the top.");
+      if (legibility <= 6) notes.push("Break dense text into shorter sections with stronger headings or bullets.");
+      if (understandability <= 6) notes.push("Replace bureaucratic wording with plainer language.");
+      if (navigability <= 6) notes.push("Move key actions, forms, and deadlines closer to the top.");
+      if (actionability <= 6) notes.push("Add clearer next-step instructions, deadlines, and contact info.");
+      if (!notes.length) notes.push("Mostly strong page. Focus on refining clarity and keeping update dates visible.");
+
+      return {
+        scores: { legibility, understandability, navigability, currency, actionability },
+        metrics: {
+          wordCount, sentenceCount, avgWordsPerSentence: avgWordsPerSentence.toFixed(1), readingEase: readingEase.toFixed(1),
+          headingCount, linkCount, listCount, longParagraphs, jargonCount, actionCount, deadlineCount,
+          dateCount: parsedDates.length, recentDates, emailCount, phoneCount, buttonCount, formCount: extracted.formCount,
+          hasAddressish, title: extracted.title, url: url || ""
+        },
+        evidence: {
+          legibility: [
+            `${wordCount} words total`,
+            `Reading ease ${readingEase.toFixed(1)}`,
+            `${headingCount} headings and ${listCount} list items detected`,
+            `${longParagraphs} very long paragraphs detected`
+          ],
+          understandability: [
+            `Average sentence length ${avgWordsPerSentence.toFixed(1)} words`,
+            `${jargonCount} jargon-like terms detected`,
+            `${actionCount} action words detected`,
+            stepMarkers ? `Step/instruction language detected` : `No strong step-by-step language detected`
+          ],
+          navigability: [
+            `${headingCount} headings`,
+            `${linkCount} links`,
+            `${buttonCount} buttons and ${extracted.formCount} forms`,
+            wordCount > 1400 ? `Long page length may hurt scanning` : `Page length is not unusually long`
+          ],
+          currency: [
+            `${parsedDates.length} dates detected`,
+            `${recentDates} recent dates detected`,
+            updateWords ? `Update language detected` : `No explicit update language detected`,
+            `${deadlineCount} deadline indicators detected`
+          ],
+          actionability: [
+            `${actionCount} action words detected`,
+            `${emailCount} emails and ${phoneCount} phone numbers detected`,
+            hasAddressish ? `Address-like location text detected` : `No clear address detected`,
+            `${buttonCount} buttons, ${extracted.formCount} forms, ${deadlineCount} deadline indicators`
+          ]
+        },
+        notes
+      };
+    }
+
+    function applySuggestedScores(scores) {
+      ids.forEach(id => {
+        document.getElementById(id).value = scores[id];
+        document.getElementById(id + "Val").textContent = scores[id];
+      });
+      calcFinal();
+    }
+
+    function fillEvidence(evidence) {
+      ids.forEach(id => {
+        const ul = document.getElementById(id + "Evidence");
+        ul.innerHTML = "";
+        (evidence[id] || []).forEach(line => {
+          const li = document.createElement("li");
+          li.textContent = line;
+          ul.appendChild(li);
+        });
+      });
+    }
+
+    function updateMetrics(m) {
+      document.getElementById("wordCount").textContent = m.wordCount;
+      document.getElementById("readingEase").textContent = m.readingEase;
+      document.getElementById("headingCount").textContent = m.headingCount;
+      document.getElementById("linkCount").textContent = m.linkCount;
+      document.getElementById("dateCount").textContent = m.dateCount;
+      document.getElementById("contactCount").textContent = m.emailCount + m.phoneCount + m.buttonCount + m.formCount + (m.hasAddressish ? 1 : 0);
+    }
+
+    function calcFinal() {
       let total = 0;
       ids.forEach(id => {
         const v = Number(document.getElementById(id).value);
-        document.getElementById(id + 'Val').textContent = v;
+        document.getElementById(id + "Val").textContent = v;
         total += v * weights[id];
       });
-      const out = (total * 10).toFixed(1);
-      document.getElementById('score').textContent = out;
-      const band = document.getElementById('band');
-      const explanation = document.getElementById('explanation');
-      if (out >= 85) {
-        band.textContent = 'Excellent'; band.className = 'band good'; explanation.textContent = 'This page is very strong and public-friendly.';
-      } else if (out >= 70) {
-        band.textContent = 'Strong'; band.className = 'band good'; explanation.textContent = 'This page works well, though it still has room to improve.';
-      } else if (out >= 55) {
-        band.textContent = 'Usable but flawed'; band.className = 'band mid'; explanation.textContent = 'This page is usable but has clear weaknesses.';
+      const score = (total * 10).toFixed(1);
+      document.getElementById("score").textContent = score;
+      const band = document.getElementById("band");
+      const explanation = document.getElementById("explanation");
+      if (score >= 85) {
+        band.textContent = "Excellent"; band.className = "band good"; explanation.textContent = "This page is very strong and public-friendly.";
+      } else if (score >= 70) {
+        band.textContent = "Strong"; band.className = "band good"; explanation.textContent = "This page works well, though it still has room to improve.";
+      } else if (score >= 55) {
+        band.textContent = "Usable but flawed"; band.className = "band mid"; explanation.textContent = "This page is usable but has clear weaknesses.";
       } else {
-        band.textContent = 'Hard to use'; band.className = 'band bad'; explanation.textContent = 'This page is likely confusing or frustrating for the public.';
+        band.textContent = "Hard to use"; band.className = "band bad"; explanation.textContent = "This page is likely confusing or frustrating for the public.";
       }
     }
 
-    ids.forEach(id => document.getElementById(id).addEventListener('input', calc));
-    calc();
-
-    document.getElementById('exampleBtn').addEventListener('click', () => {
-      document.getElementById('pageName').value = 'Georgia.gov absentee ballot page';
-      document.getElementById('pageUrl').value = 'https://georgia.gov/vote-absentee-ballot';
-      document.getElementById('legibility').value = 8;
-      document.getElementById('understandability').value = 7;
-      document.getElementById('navigability').value = 8;
-      document.getElementById('currency').value = 8;
-      document.getElementById('actionability').value = 9;
-      document.getElementById('notes').value = 'Clear steps and strong action links. No obvious visible last-updated date.';
-      calc();
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      document.getElementById('pageName').value = '';
-      document.getElementById('pageUrl').value = '';
-      document.getElementById('notes').value = '';
-      ids.forEach(id => document.getElementById(id).value = 5);
-      calc();
-    });
-
-    document.getElementById('copyBtn').addEventListener('click', async () => {
-      const text = 'Civic Optics Protocol Report\n\n' +
-        'Page: ' + (document.getElementById('pageName').value || 'Untitled page') + '\n' +
-        'URL: ' + (document.getElementById('pageUrl').value || 'No URL entered') + '\n\n' +
-        'Legibility: ' + document.getElementById('legibility').value + '/10\n' +
-        'Understandability: ' + document.getElementById('understandability').value + '/10\n' +
-        'Navigability: ' + document.getElementById('navigability').value + '/10\n' +
-        'Currency: ' + document.getElementById('currency').value + '/10\n' +
-        'Actionability: ' + document.getElementById('actionability').value + '/10\n\n' +
-        'Final COP-1 Score: ' + document.getElementById('score').textContent + '/100\n' +
-        'Band: ' + document.getElementById('band').textContent + '\n\n' +
-        'Notes:\n' + (document.getElementById('notes').value || 'No notes entered.');
+    async function getSource() {
+      const pasted = document.getElementById("sourceInput").value.trim();
+      const url = document.getElementById("pageUrl").value.trim();
+      if (pasted) return { raw: pasted, mode: isLikelyHTML(pasted) ? "pasted HTML" : "pasted text", url };
+      if (!url) throw new Error("Enter a URL or paste page text/HTML first.");
       try {
-        await navigator.clipboard.writeText(text);
-        const btn = document.getElementById('copyBtn');
+        const res = await fetch(url, { mode: "cors" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const raw = await res.text();
+        return { raw, mode: "direct URL fetch", url };
+      } catch (err) {
+        throw new Error("Direct fetch failed. This usually means the site blocks browser cross-origin requests. Paste the page text or HTML into the big box instead.");
+      }
+    }
+
+    async function analyze() {
+      setStatus("Analyzing...");
+      try {
+        const source = await getSource();
+        const extracted = isLikelyHTML(source.raw) ? extractFromHTML(source.raw) : extractFromPlainText(source.raw);
+        const result = scoreSource(extracted, source.url);
+        lastAnalysis = { source, extracted, result };
+        if (!document.getElementById("pageName").value.trim()) {
+          document.getElementById("pageName").value = extracted.title || (source.url ? new URL(source.url).hostname : "Untitled page");
+        }
+        applySuggestedScores(result.scores);
+        updateMetrics(result.metrics);
+        fillEvidence(result.evidence);
+        document.getElementById("notes").value = result.notes.join(" ");
+        setStatus(`Analysis complete using ${source.mode}. Suggested scores applied automatically.`);
+      } catch (err) {
+        setStatus(err.message || "Analysis failed.");
+      }
+    }
+
+    document.getElementById("analyzeBtn").addEventListener("click", analyze);
+    document.getElementById("exampleBtn").addEventListener("click", () => {
+      document.getElementById("pageName").value = "Example absentee voting instructions";
+      document.getElementById("pageUrl").value = "";
+      document.getElementById("sourceInput").value = `<html><head><title>Vote by Absentee Ballot</title></head><body><h1>Vote by Absentee Ballot</h1><h2>Get Prepared</h2><p>You must be registered to vote. Bring ID. Request your ballot early.</p><h2>Request a Ballot</h2><ol><li>Download the application.</li><li>Print and sign it.</li><li>Email it to your county office.</li></ol><p>Applications must be received by May 10, 2026.</p><p>Questions? Email elections@example.gov or call 404-555-1234.</p></body></html>`;
+      analyze();
+    });
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      document.getElementById("pageName").value = "";
+      document.getElementById("pageUrl").value = "";
+      document.getElementById("sourceInput").value = "";
+      document.getElementById("notes").value = "";
+      ids.forEach(id => { document.getElementById(id).value = 5; document.getElementById(id + "Val").textContent = 5; document.getElementById(id + "Evidence").innerHTML = ""; });
+      ["wordCount","readingEase","headingCount","linkCount","dateCount","contactCount"].forEach(id => document.getElementById(id).textContent = 0);
+      lastAnalysis = null;
+      calcFinal();
+      setStatus("Reset. Enter a URL or paste source text, then click Analyze source.");
+    });
+
+    ids.forEach(id => document.getElementById(id).addEventListener("input", calcFinal));
+    calcFinal();
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const report = [
+        "Civic Optics Protocol Report",
+        "",
+        `Page: ${document.getElementById("pageName").value || "Untitled page"}`,
+        `URL: ${document.getElementById("pageUrl").value || "No URL entered"}`,
+        `Source mode: ${lastAnalysis ? lastAnalysis.source.mode : "manual only"}`,
+        "",
+        `Legibility: ${document.getElementById("legibility").value}/10`,
+        `Understandability: ${document.getElementById("understandability").value}/10`,
+        `Navigability: ${document.getElementById("navigability").value}/10`,
+        `Currency: ${document.getElementById("currency").value}/10`,
+        `Actionability: ${document.getElementById("actionability").value}/10`,
+        `Final COP-1 Score: ${document.getElementById("score").textContent}/100`,
+        `Band: ${document.getElementById("band").textContent}`,
+        "",
+        "Extracted metrics:",
+        `- Words: ${document.getElementById("wordCount").textContent}`,
+        `- Reading ease: ${document.getElementById("readingEase").textContent}`,
+        `- Headings: ${document.getElementById("headingCount").textContent}`,
+        `- Links: ${document.getElementById("linkCount").textContent}`,
+        `- Dates detected: ${document.getElementById("dateCount").textContent}`,
+        `- Contact/form signals: ${document.getElementById("contactCount").textContent}`,
+        "",
+        "Notes:",
+        document.getElementById("notes").value || "No notes entered."
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(report);
+        const btn = document.getElementById("copyBtn");
         const old = btn.textContent;
-        btn.textContent = 'Copied';
+        btn.textContent = "Copied";
         setTimeout(() => btn.textContent = old, 1200);
-      } catch (e) {
-        alert(text);
+      } catch {
+        alert(report);
       }
     });
   </script>
