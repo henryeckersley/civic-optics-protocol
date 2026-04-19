@@ -2,25 +2,45 @@
 
 This project scores whether a public-facing government page is actually usable.
 
-The live homepage is now a **working calculator**. You do not need Python to use the main tool anymore.
+The homepage is now a **semi-automated analyzer**, not just a manual slider page.
 
-## What this measures
+## What the tool now does
 
-COP-1 scores a page across five categories:
+You can:
 
-- **Legibility** — can a normal person read it quickly?
-- **Understandability** — does it make sense without jargon?
-- **Navigability** — can people find what matters fast?
-- **Currency** — does it look current and up to date?
-- **Actionability** — does it clearly tell people what to do next?
+1. Paste a **URL** and let the site try to fetch the page.
+2. Or paste the **page text or raw HTML** directly.
+3. The analyzer then extracts evidence and suggests scores for:
+   - **Legibility**
+   - **Understandability**
+   - **Navigability**
+   - **Currency**
+   - **Actionability**
+4. You can still override the suggested scores manually.
+5. Click **Copy report** to export a writeup.
 
-## Fastest way to use it
+## What it automatically looks for
 
-1. Open the live site homepage.
-2. Enter the page name and URL.
-3. Move the five sliders from 0 to 10.
-4. Read the final score out of 100.
-5. Click **Copy report** and paste the result into a doc, spreadsheet, email, or article draft.
+The analyzer checks signals like:
+
+- word count
+- reading ease
+- heading count
+- links
+- list items
+- long paragraphs
+- detected dates
+- update language
+- action words
+- contact info
+- forms/buttons
+- jargon-like terms
+
+## Important limitation
+
+This is a static GitHub Pages site, so direct URL analysis can fail when a website blocks browser cross-origin requests.
+
+When that happens, paste the visible page text or raw HTML into the source box and the analyzer still works.
 
 ## Score interpretation
 
@@ -29,37 +49,26 @@ COP-1 scores a page across five categories:
 - **55-69** = usable but flawed
 - **Below 55** = hard for the public to use
 
-## Example
-
-If a county absentee voting page feels:
-
-- Legibility: 8
-- Understandability: 6
-- Navigability: 7
-- Currency: 5
-- Actionability: 9
-
-Then the tool calculates the weighted COP-1 score automatically.
-
 ## Files in this repo
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The actual browser calculator |
-| `protocol.md` | The scoring standard |
-| `audits/sample_audit.md` | Example writeup |
+| `index.html` | Semi-automated browser analyzer |
+| `protocol.md` | Scoring standard |
+| `audit-template.md` | Copyable writeup template |
+| `audits/sample_audit.md` | Example audit |
 | `scorer.py` | Command-line fallback calculator |
 
 ## Good use cases
 
-- Compare election-information pages across counties
-- Score school board notice pages
-- Audit city service or permit pages
-- Build a ranked list of which civic pages are easiest or hardest to use
+- compare election-information pages across counties
+- score school board notice pages
+- audit city service or permit pages
+- rank which public pages are easiest or hardest to use
 
 ## Notes
 
-This is best used as a **human-scored audit tool**, not an automatic crawler. The point is to make your judgment explicit, consistent, and publishable.
+This is still a **human-in-the-loop audit tool**, not a full autonomous crawler. The point is to combine extracted evidence with human judgment so the result is more defensible and publishable.
 
 ## License
 
