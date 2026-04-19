@@ -1,36 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Civic Optics Protocol</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COP-1 Calculator</title>
   <style>
-    body { font-family: sans-serif; margin: 0 auto; max-width: 800px; padding: 1rem; line-height: 1.5; }
-    h1, h2 { color: #333; }
-    nav a { margin-right: 1rem; }
-    footer { margin-top: 2rem; font-size: 0.8rem; color: #666; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f7fb; color: #111; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .card { background: #fff; border: 1px solid #dcdfe8; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.04); }
+    .hero { margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: 1.2fr .85fr; gap: 16px; }
+    .row { border: 1px solid #e3e6ef; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .pill { background: #eef2ff; color: #1d3fff; font-weight: 700; border-radius: 999px; padding: 6px 10px; min-width: 40px; text-align: center; }
+    input[type='text'], input[type='url'], textarea { width: 100%; box-sizing: border-box; border: 1px solid #dcdfe8; border-radius: 10px; padding: 10px 12px; font: inherit; }
+    input[type='range'] { width: 100%; }
+    textarea { min-height: 110px; resize: vertical; }
+    .small { color: #666; font-size: 13px; }
+    .score { font-size: 52px; font-weight: 800; line-height: 1; margin: 8px 0; }
+    .band { display: inline-block; border-radius: 999px; padding: 6px 10px; font-weight: 700; }
+    .good { background: #e8f7ee; color: #1f8f4e; }
+    .mid { background: #fff3de; color: #a86a00; }
+    .bad { background: #fdeaea; color: #c53030; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    button, a.btn { border: 1px solid #dcdfe8; border-radius: 10px; padding: 10px 14px; background: #fff; color: #111; text-decoration: none; cursor: pointer; font: inherit; }
+    button.primary { background: #2d5bff; border-color: #2d5bff; color: #fff; }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .steps { margin-top: 16px; }
+    .steps div { background: #fff; border: 1px solid #dcdfe8; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } .score { font-size: 40px; } }
   </style>
 </head>
 <body>
-  <h1>Civic Optics Protocol (COP‑1)</h1>
-  <p>The Civic Optics Protocol is an open standard for assessing the quality of public‑facing civic information.  It helps advocates, researchers and public servants evaluate whether information is <strong>legible</strong>, <strong>understandable</strong>, <strong>navigable</strong>, <strong>current</strong> and <strong>actionable</strong>.</p>
-  <nav>
-    <a href="protocol.md">Standard</a>
-    <a href="audits/sample_audit.md">Sample audit</a>
-    <a href="README.md">README</a>
-  </nav>
-  <h2>Why COP‑1?</h2>
-  <p>Democracy depends on accessible information.  Elections, public meetings and policy changes are often published in formats that are hard to find or understand.  COP‑1 offers a simple, replicable way to measure and improve the quality of these materials.</p>
-  <h2>How it works</h2>
-  <ul>
-    <li>Assign scores (0–10) to each criterion based on the rubric defined in <a href="protocol.md">protocol.md</a>.</li>
-    <li>Use the weighting formula to compute the Civic Optics Index (COI).</li>
-    <li>Publish your results and recommendations to encourage improvement.</li>
-  </ul>
-  <h2>Learn more</h2>
-  <p>Check out the <a href="audits/sample_audit.md">sample audit</a> for an example and the <code>scorer.py</code> script for a command‑line tool to calculate scores.</p>
-  <footer>
-    <p>Released under CC0.  Built by students for the public good.</p>
-  </footer>
+  <div class="wrap">
+    <div class="card hero">
+      <h1>COP-1 Calculator</h1>
+      <p>This page is the actual tool. Score a public information page from 0 to 10 across the five categories and it calculates the final COP-1 score automatically.</p>
+      <p class="small">0 = terrible, 10 = excellent. Weights: Legibility 20%, Understandability 30%, Navigability 20%, Currency 15%, Actionability 15%.</p>
+      <div class="links">
+        <a class="btn" href="protocol.md">Scoring standard</a>
+        <a class="btn" href="audits/sample_audit.md">Sample audit</a>
+        <a class="btn" href="README.md">README</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+          <div>
+            <label><strong>Page name</strong></label>
+            <input id="pageName" type="text" placeholder="Example: Fulton County absentee voting page" />
+          </div>
+          <div>
+            <label><strong>URL</strong></label>
+            <input id="pageUrl" type="url" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="head"><div><strong>Legibility</strong><div class="small">Can a normal person read it quickly?</div></div><div class="pill" id="legibilityVal">5</div></div>
+          <input id="legibility" type="range" min="0" max="10" value="5" />
+        </div>
+
+        <div class="row">
+          <div class="head"><div><strong>Understandability</strong><div class="small">Does it make sense without jargon?</div></div><div class="pill" id="understandabilityVal">5</div></div>
+          <input id="understandability" type="range" min="0" max="10" value="5" />
+        </div>
+
+        <div class="row">
+          <div class="head"><div><strong>Navigability</strong><div class="small">Can people find what matters fast?</div></div><div class="pill" id="navigabilityVal">5</div></div>
+          <input id="navigability" type="range" min="0" max="10" value="5" />
+        </div>
+
+        <div class="row">
+          <div class="head"><div><strong>Currency</strong><div class="small">Does it look current and up to date?</div></div><div class="pill" id="currencyVal">5</div></div>
+          <input id="currency" type="range" min="0" max="10" value="5" />
+        </div>
+
+        <div class="row">
+          <div class="head"><div><strong>Actionability</strong><div class="small">Does it clearly tell people what to do next?</div></div><div class="pill" id="actionabilityVal">5</div></div>
+          <input id="actionability" type="range" min="0" max="10" value="5" />
+        </div>
+
+        <label><strong>Notes</strong></label>
+        <textarea id="notes" placeholder="Example: Deadline is buried. Strong direct link to the form. No visible update date."></textarea>
+      </div>
+
+      <div class="card">
+        <h2>Result</h2>
+        <div class="score" id="score">50.0</div>
+        <div class="band mid" id="band">Needs work</div>
+        <p class="small" id="explanation">This page is usable but has clear weaknesses.</p>
+
+        <div class="row" style="margin-top:14px;">
+          <strong>Interpretation</strong>
+          <div class="small" style="margin-top:8px;">
+            85-100 = excellent<br>
+            70-84 = strong<br>
+            55-69 = usable but flawed<br>
+            below 55 = hard for the public to use
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="copyBtn">Copy report</button>
+          <button id="exampleBtn">Load example</button>
+          <button id="resetBtn">Reset</button>
+        </div>
+
+        <p class="small" style="margin-top:14px;">Use Copy report after scoring a page, then paste the result into a doc, spreadsheet, email, or article draft.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <h2>How to use it</h2>
+      <div><strong>1.</strong> Open a public page you want to audit.</div>
+      <div><strong>2.</strong> Move the five sliders based on how usable the page feels.</div>
+      <div><strong>3.</strong> Read the total score and copy the generated report.</div>
+    </div>
+  </div>
+
+  <script>
+    const ids = ['legibility','understandability','navigability','currency','actionability'];
+    const weights = { legibility:.20, understandability:.30, navigability:.20, currency:.15, actionability:.15 };
+
+    function calc() {
+      let total = 0;
+      ids.forEach(id => {
+        const v = Number(document.getElementById(id).value);
+        document.getElementById(id + 'Val').textContent = v;
+        total += v * weights[id];
+      });
+      const out = (total * 10).toFixed(1);
+      document.getElementById('score').textContent = out;
+      const band = document.getElementById('band');
+      const explanation = document.getElementById('explanation');
+      if (out >= 85) {
+        band.textContent = 'Excellent'; band.className = 'band good'; explanation.textContent = 'This page is very strong and public-friendly.';
+      } else if (out >= 70) {
+        band.textContent = 'Strong'; band.className = 'band good'; explanation.textContent = 'This page works well, though it still has room to improve.';
+      } else if (out >= 55) {
+        band.textContent = 'Usable but flawed'; band.className = 'band mid'; explanation.textContent = 'This page is usable but has clear weaknesses.';
+      } else {
+        band.textContent = 'Hard to use'; band.className = 'band bad'; explanation.textContent = 'This page is likely confusing or frustrating for the public.';
+      }
+    }
+
+    ids.forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+
+    document.getElementById('exampleBtn').addEventListener('click', () => {
+      document.getElementById('pageName').value = 'Georgia.gov absentee ballot page';
+      document.getElementById('pageUrl').value = 'https://georgia.gov/vote-absentee-ballot';
+      document.getElementById('legibility').value = 8;
+      document.getElementById('understandability').value = 7;
+      document.getElementById('navigability').value = 8;
+      document.getElementById('currency').value = 8;
+      document.getElementById('actionability').value = 9;
+      document.getElementById('notes').value = 'Clear steps and strong action links. No obvious visible last-updated date.';
+      calc();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('pageName').value = '';
+      document.getElementById('pageUrl').value = '';
+      document.getElementById('notes').value = '';
+      ids.forEach(id => document.getElementById(id).value = 5);
+      calc();
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const text = 'Civic Optics Protocol Report\n\n' +
+        'Page: ' + (document.getElementById('pageName').value || 'Untitled page') + '\n' +
+        'URL: ' + (document.getElementById('pageUrl').value || 'No URL entered') + '\n\n' +
+        'Legibility: ' + document.getElementById('legibility').value + '/10\n' +
+        'Understandability: ' + document.getElementById('understandability').value + '/10\n' +
+        'Navigability: ' + document.getElementById('navigability').value + '/10\n' +
+        'Currency: ' + document.getElementById('currency').value + '/10\n' +
+        'Actionability: ' + document.getElementById('actionability').value + '/10\n\n' +
+        'Final COP-1 Score: ' + document.getElementById('score').textContent + '/100\n' +
+        'Band: ' + document.getElementById('band').textContent + '\n\n' +
+        'Notes:\n' + (document.getElementById('notes').value || 'No notes entered.');
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copyBtn');
+        const old = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(() => btn.textContent = old, 1200);
+      } catch (e) {
+        alert(text);
+      }
+    });
+  </script>
 </body>
 </html>
